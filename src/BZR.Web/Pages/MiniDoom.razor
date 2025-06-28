@@ -1,0 +1,89 @@
+﻿@page "/doomlike"
+
+@using HomagGroup.Blazor3D
+@using HomagGroup.Blazor3D.Core
+@using HomagGroup.Blazor3D.Geometires
+@using HomagGroup.Blazor3D.Lights
+@using HomagGroup.Blazor3D.Materials
+@using HomagGroup.Blazor3D.Objects
+@using HomagGroup.Blazor3D.Scenes
+@using HomagGroup.Blazor3D.Settings
+@using HomagGroup.Blazor3D.Viewers
+@using HomagGroup.Blazor3D.Maths
+@inject IJSRuntime JS
+
+<h3>Mini Doom-Like: Corredor 3D</h3>
+
+<button class="btn btn-primary mb-2" @onclick="AtivarControles">Ativar Navegação</button>
+
+<div id="viewer-container" style="height:600px; background-color: black;">
+    <Viewer @ref="viewer" Scene="@scene" ViewerSettings="@settings" />
+</div>
+
+@code {
+    private Viewer viewer = null!;
+    private Scene scene = new();
+    private ViewerSettings settings = new();
+
+    protected override void OnInitialized()
+    {
+        AddLights();
+        BuildCorridor();
+    }
+
+    private void AddLights()
+    {
+        scene.Add(new AmbientLight { Intensity = 0.4f });
+
+        scene.Add(new PointLight
+        {
+            Intensity = 1f,
+            Position = new Vector3(0f, 5f, 5f)
+        });
+    }
+
+    private void BuildCorridor()
+    {
+        var wallMaterial = new MeshStandardMaterial { Color = "#444444" };
+        var floorMaterial = new MeshStandardMaterial { Color = "#222222" };
+        var ceilingMaterial = new MeshStandardMaterial { Color = "#333333" };
+
+        for (int i = 0; i < 10; i++)
+        {
+            float z = -i * 5f;
+
+            scene.Add(new Mesh
+            {
+                Geometry = new BoxGeometry { Width = 0.5f, Height = 3f, Depth = 5f },
+                Material = wallMaterial,
+                Position = new Vector3(-2f, 1.5f, z)
+            });
+
+            scene.Add(new Mesh
+            {
+                Geometry = new BoxGeometry { Width = 0.5f, Height = 3f, Depth = 5f },
+                Material = wallMaterial,
+                Position = new Vector3(2f, 1.5f, z)
+            });
+
+            scene.Add(new Mesh
+            {
+                Geometry = new BoxGeometry { Width = 4.5f, Height = 0.1f, Depth = 5f },
+                Material = floorMaterial,
+                Position = new Vector3(0f, 0f, z)
+            });
+
+            scene.Add(new Mesh
+            {
+                Geometry = new BoxGeometry { Width = 4.5f, Height = 0.1f, Depth = 5f },
+                Material = ceilingMaterial,
+                Position = new Vector3(0f, 3f, z)
+            });
+        }
+    }
+
+    private async Task AtivarControles()
+    {
+        await JS.InvokeVoidAsync("ativarControlesDoomLike");
+    }
+}
