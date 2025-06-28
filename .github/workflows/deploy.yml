@@ -2,7 +2,7 @@ name: Deploy Blazor WASM to GitHub Pages
 
 on:
     push:
-        branches: main
+        branches: [main]
 
 jobs:
     deploy-to-github-pages:
@@ -21,9 +21,9 @@ jobs:
 
             - name: Publish .NET Core Project
               run: dotnet publish src/BZR.Web/BZR.Web.csproj -c Release -o release --nologo
-              
+
             - name: Update base href
-              run: sed -i 's|<base href="/"|<base href="/Blazorium/"|' release/wwwroot/index.html
+              run: sed -i 's|<base href="/"|<base href="/BLR/"|' release/wwwroot/index.html
 
             - name: copy index.html to 404.html
               run: cp release/wwwroot/index.html release/wwwroot/404.html
