@@ -1,7 +1,101 @@
 ﻿@page "/"
 
+@using HomagGroup.Blazor3D
+@using HomagGroup.Blazor3D.Core
+@using System.Numerics
+@using HomagGroup.Blazor3D.Geometires
+@using HomagGroup.Blazor3D.Lights
+@using HomagGroup.Blazor3D.Materials
+@using HomagGroup.Blazor3D.Objects
+@using HomagGroup.Blazor3D.Scenes
+@using HomagGroup.Blazor3D.Settings
+@using HomagGroup.Blazor3D.Viewers
+@using HomagGroup.Blazor3D.Maths
+@using System.Drawing
+
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="row">
+    <div class="col-12" style="height:500px; background-color: #f0f0f0;">
+        <Viewer @ref="viewer" ViewerSettings="@settings" Scene="@scene" />
+    </div>
+</div>
 
-Welcome to your new app.
+@code {
+    private Viewer viewer = null!;
+    private Scene scene = new();
+    private ViewerSettings settings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AddLights();
+        AddLetterH();
+        await Task.CompletedTask;
+    }
+
+    private void AddLights()
+    {
+        scene.Add(new AmbientLight { Intensity = 0.5f });
+
+        scene.Add(new PointLight
+        {
+            Intensity = 1f,
+        });
+    }
+
+    private void AddLetterH()
+    {
+        var material = new MeshStandardMaterial
+        {
+            Metalness = 0.3f,
+            Roughness = 0.5f,
+            Color = "#1E90FF"
+        };
+
+        var boxLeft = new BoxGeometry
+        {
+            Width = 1f,
+            Height = 3f,
+            Depth = 1f
+        };
+
+        var boxRight = new BoxGeometry
+        {
+            Width = 1f,
+            Height = 3f,
+            Depth = 1f
+        };
+
+        var boxMiddle = new BoxGeometry
+        {
+            Width = 2f,
+            Height = 1f,
+            Depth = 1f
+        };
+
+        var left = new Mesh
+        {
+            Geometry = boxLeft,
+            Material = material,
+            Position = new HomagGroup.Blazor3D.Maths.Vector3(-1.5f, 0f, 0f)
+        };
+
+        var right = new Mesh
+        {
+            Geometry = boxRight,
+            Material = material,
+            Position = new HomagGroup.Blazor3D.Maths.Vector3(1.5f, 0f, 0f)
+        };
+
+        var middle = new Mesh
+        {
+            Geometry = boxMiddle,
+            Material = material,
+            Position = new HomagGroup.Blazor3D.Maths.Vector3(0f, 0f, 0f)
+        };
+
+        scene.Add(left);
+        scene.Add(right);
+        scene.Add(middle);
+    }
+}
